@@ -34,7 +34,7 @@ public class AnalisadorSintático {
             
             while(!lines.isEmpty()) {
                 i = lines.iterator();
-                readFile(count, lines.size(), i);
+                controller.analiseArq(readFile(count, lines.size(), i));
 
                 count++;
                 path = "input\\entrada" + count + ".txt";
@@ -47,8 +47,9 @@ public class AnalisadorSintático {
         }
     }
     
-    public static TokensList readFile (int count, int size, Iterator<String> iterator) {
+    public static Iterator<Token> readFile (int count, int size, Iterator<String> iterator) {
         TokensList tk;
+        Iterator<Token> it;
         Token token;
         
         tk = new TokensList(size);
@@ -63,7 +64,8 @@ public class AnalisadorSintático {
             tk.addToken(token);
         }
 
-        return tk;
+        it = tk.pegarTodos().iterator();
+        return it;
     }
     
 }

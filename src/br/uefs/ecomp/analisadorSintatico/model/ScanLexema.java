@@ -1,0 +1,38 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.uefs.ecomp.analisadorSintatico.model;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ *
+ * @author sandr
+ */
+public class ScanLexema {
+    private final String[] type = { "int", "string", "real", "boolean" };
+    private final String[] commands = { "if", "while", "read", "print" } ;
+    private final String[] modifiers = { "global", "local" };
+    
+    
+    public boolean isType(String lexema){
+        List<String> types = Arrays.asList(this.type);
+        
+        return lexema != null? types.contains(lexema): null;
+    }
+    
+    public boolean isCommands(String lexema) {
+        List<String> command = Arrays.asList(this.commands);
+        
+        return lexema != null? command.contains(lexema): null;
+    }
+    
+    public boolean isModifiers(String lexema) {
+        List<String> modifier = Arrays.asList(this.modifiers);
+        
+        return lexema != null? modifier.contains(lexema): null;
+    }
+}

@@ -5,10 +5,19 @@
  */
 package br.uefs.ecomp.analisadorSintatico.controller;
 
+import br.uefs.ecomp.AnalisadorLexico.model.Token;
+import br.uefs.ecomp.analisadorSintatico.model.TokensReader;
+import java.util.Iterator;
+
 /**
  *
  * @author Alessandro Costa
  */
 public class AnalisadorSintaticoController {
+    TokensReader tr;
     
+    public void analiseArq (Iterator<Token> arq){
+        
+        tr = new TokensReader(arq);
+    }
 }

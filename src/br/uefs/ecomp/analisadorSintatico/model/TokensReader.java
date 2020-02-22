@@ -221,7 +221,8 @@ public class TokensReader {
         } else {
             setErro(token.getLine(), "Delimitator: \"(\"", token.getLexema());
             while(!token.getCodigo().equals("NRO") || !token.getCodigo().equals("CDC")
-                    || !scan.isBooleans(token.getLexema()) || !scan.isModifiers(token.getLexema())){
+                    || !scan.isBooleans(token.getLexema()) || !scan.isModifiers(token.getLexema())
+                    || !token.getLexema().equals("-")){
                 token = this.arq.next();
                 if(!this.arq.hasNext()){
                     break;
@@ -242,14 +243,56 @@ public class TokensReader {
             token = this.arq.next();
         } else {
             setErro(token.getLine(), "Delimitator: \";\"", token.getLexema());
-            this.arq.next();
+            token = this.arq.next();
         }
         
         commands(token);
     }
     
     private void realParams(Token token){
+        realParam(token);
+    }
+    
+    private void realParam(Token token){
         
+        if(token.getCodigo().equals("NRO") || token.getCodigo().equals("CDC") 
+                || scan.isBooleans(token.getLexema()) || scan.isModifiers(token.getLexema())
+                || token.getLexema().equals("-")){
+            if(scan.isModifiers(token.getLexema())){
+                token = this.arq.next();
+                call_variable(token);
+            } else 
+                if(token.getLexema().equals("-")){
+                    token = this.arq.next();
+                    if(token.getCodigo().equals("NRO")){
+                        token = this.arq.next();
+                    } else {
+                        setErro(token.getLine(), "Number", token.getLexema());
+                        panicState(token, ",");
+                    }
+                }
+            else {
+                token = this.arq.next();
+            }
+            
+            more_real_params(token);
+        } 
+    }
+    
+    private void more_real_params(Token token){
+        
+        if(token.getLexema().equals(",")){
+            token = this.arq.next();
+            if(token.getCodigo().equals("NRO") || token.getCodigo().equals("CDC") 
+                || scan.isBooleans(token.getLexema()) || scan.isModifiers(token.getLexema())
+                || token.getLexema().equals("-")){
+                realParam(token);
+            } else {
+                setErro(token.getLine(), "Number, string, boolean, variable", token.getLexema());
+                panicState(token, ",");
+                more_real_params(token);
+            }
+        }
     }
     
     private void printStatement(Token token){

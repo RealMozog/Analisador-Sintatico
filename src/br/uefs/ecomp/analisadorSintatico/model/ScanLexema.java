@@ -28,18 +28,18 @@ public class ScanLexema {
     public boolean isCommands(String lexema) {
         List<String> command = Arrays.asList(this.commands);
         
-        return lexema != null? command.contains(lexema): null;
+        return lexema != null? command.contains(lexema): false;
     }
     
     public boolean isModifiers(String lexema) {
         List<String> modifier = Arrays.asList(this.modifiers);
         
-        return lexema != null? modifier.contains(lexema): null;
+        return lexema != null? modifier.contains(lexema): false;
     }
     
     public boolean isBooleans(String lexema) {
-        List<String> modifier = Arrays.asList(this.boleans);
+        List<String> bolean = Arrays.asList(this.boleans);
         
-        return lexema != null? modifier.contains(lexema): null;
+        return lexema != null? bolean.contains(lexema): false;
     }
 }

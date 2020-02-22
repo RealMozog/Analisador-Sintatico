@@ -16,6 +16,7 @@ public class ScanLexema {
     private final String[] type = { "int", "string", "real", "boolean" };
     private final String[] commands = { "if", "while", "read", "print" } ;
     private final String[] modifiers = { "global", "local" };
+    private final String[] boleans = { "true", "false" };
     
     
     public boolean isType(String lexema){
@@ -32,6 +33,12 @@ public class ScanLexema {
     
     public boolean isModifiers(String lexema) {
         List<String> modifier = Arrays.asList(this.modifiers);
+        
+        return lexema != null? modifier.contains(lexema): null;
+    }
+    
+    public boolean isBooleans(String lexema) {
+        List<String> modifier = Arrays.asList(this.boleans);
         
         return lexema != null? modifier.contains(lexema): null;
     }

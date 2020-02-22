@@ -14,25 +14,32 @@ import java.util.Iterator;
  */
 public class TokensReader {
     Iterator<Token> arq;
+    ErrorList erroList;
     ScanLexema scan;
     
     public TokensReader(Iterator<Token> arq){
         this.arq = arq;
         scan = new ScanLexema();
+        this.erroList = new ErrorList();
         
         stateZero(arq.next());
     }
     
+    private void setErro(int line, String expected, String found){
+        Error erro = new Error(line, expected, found); 
+        this.erroList.addErro(erro);
+    }
+    
     private void stateZero(Token token) {
-        
         if(arq.hasNext()){
             if(token.getCodigo().equals("PRE")){
                 switch (token.getLexema()) {
                     case "function":
                         token = arq.next();
-                        if(scan.isType(token.getLexema())){
+                        if(scan.isType(token.getLexema()) || token.getCodigo().equals("IDE")){
                             token = arq.next();
                         } else {
+                            setErro(token.getLine(), "Type or Identifier", token.getLexema());
                             while(!token.getCodigo().equals("IDE")){
                                 token = arq.next();
                                 if(!arq.hasNext()){
@@ -44,6 +51,7 @@ public class TokensReader {
                         if(token.getCodigo().equals("IDE")){
                             token = arq.next();
                         } else {
+                            setErro(token.getLine(), "Identifier", token.getLexema());
                             panicState(token, "(");
                         }
                         
@@ -53,6 +61,7 @@ public class TokensReader {
                         if(token.getLexema().equals("}")){
                            token = arq.next();
                         } else {
+                            setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
                             while(arq.hasNext()){
                                 token = arq.next();
                             }
@@ -63,6 +72,7 @@ public class TokensReader {
                         if(token.getCodigo().equals("IDE") || token.getLexema().equals("start")){
                             token = arq.next();
                         } else {
+                            setErro(token.getLine(), "Identifier or reserverd word: \"start\"", token.getLexema());
                             panicState(token, "(");
                         }
                         
@@ -71,6 +81,7 @@ public class TokensReader {
                         if(token.getLexema().equals("}")){
                            token = arq.next();
                         } else {
+                            setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
                             while(arq.hasNext()){
                                 token = arq.next();
                             }
@@ -88,7 +99,8 @@ public class TokensReader {
         if(token.getLexema().equals("(")){
             token = arq.next();
         } else {
-            while(!scan.isType(token.getLexema())){
+            setErro(token.getLine(), "Delimitator:\"(\"", token.getLexema());
+            while(!scan.isType(token.getLexema()) || !token.getCodigo().equals("IDE")){
                 token = arq.next();
                 if(!arq.hasNext()){
                     break;
@@ -101,14 +113,15 @@ public class TokensReader {
         if(token.getLexema().equals(")")){
             token = arq.next();
         } else {
+            setErro(token.getLine(), "Delimitator:\")\"", token.getLexema());
             panicState(token, "{");
         }
         
         if(token.getLexema().equals("{")){
             token = arq.next();
         } else {
-            while(!token.getLexema().equals("var") || !scan.isCommands(token.getLexema())
-                    || !scan.isModifiers(token.getLexema()) || !token.getCodigo().equals("IDE")){
+            setErro(token.getLine(), "Delimitator:\"{\"", token.getLexema());
+            while(!token.getLexema().equals("var")){
                 token = arq.next();
                 if(!arq.hasNext()){
                     break;
@@ -118,10 +131,15 @@ public class TokensReader {
         
         if(token.getLexema().equals("var")) {
             token = arq.next();
-            var_fuctions_procedures(token);
+        } else {
+            setErro(token.getLine(), "Reserved word: \"var\"", token.getLexema());
+            panicState(token, "{");
         }
         
-        if(scan.isCommands(token.getLexema())){
+        var_fuctions_procedures(token);
+        
+        if(scan.isCommands(token.getLexema()) || scan.isModifiers(token.getLexema())
+                || token.getCodigo().equals("IDE")){
             commands(token);
         }
         
@@ -154,6 +172,99 @@ public class TokensReader {
     }
     
     private void commands (Token token) {
+        
+        if(token.getLexema().equals("if")){
+            token = this.arq.next();
+            ifStatement(token);
+        }
+        
+        if(token.getLexema().equals("while")){
+            token = this.arq.next();
+            whileStatement(token);
+        }
+        
+        if(token.getLexema().equals("read")){
+            token = this.arq.next();
+            readStatement(token);
+        }
+        
+        if(token.getLexema().equals("print")){
+            token = this.arq.next();
+            printStatement(token);
+        }
+        
+        if(scan.isModifiers(token.getLexema())) {
+            token = this.arq.next();
+            if(token.getLexema().equals(".")){
+                call_variable(token);
+            } else {
+                setErro(token.getLine(), "Delimitator: \".\"", token.getLexema());
+                while(!token.getCodigo().equals("IDE")){
+                    token = arq.next();
+                    if(!arq.hasNext()){
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if(token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+            call_procedure_function(token);
+        }
+    }
+    
+    private void call_procedure_function(Token token){
+        
+        if(token.getLexema().equals("(")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \"(\"", token.getLexema());
+            while(!token.getCodigo().equals("NRO") || !token.getCodigo().equals("CDC")
+                    || !scan.isBooleans(token.getLexema()) || !scan.isModifiers(token.getLexema())){
+                token = this.arq.next();
+                if(!this.arq.hasNext()){
+                    break;
+                }
+            }
+        }
+        
+        realParams(token);
+        
+        if(token.getLexema().equals(")")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \")\"", token.getLexema());
+            panicState(token, ";");
+        } 
+        
+        if(token.getLexema().equals(";")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \";\"", token.getLexema());
+            this.arq.next();
+        }
+        
+        commands(token);
+    }
+    
+    private void realParams(Token token){
+        
+    }
+    
+    private void printStatement(Token token){
+        
+    }
+    
+    private void readStatement(Token token){
+        
+    }
+    
+    private void whileStatement(Token token){
+        
+    }
+    
+    private void ifStatement(Token token){
         
     }
     

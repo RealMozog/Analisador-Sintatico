@@ -46,8 +46,8 @@ public class Error {
 
     @Override
     public String toString() {
-        return "Error: line= " + line + "; Expected=\"" + expected + '"'  + 
-                ", Found=\"" + found + '"' ;
+        return "Error: line= " + line + "; Expected=" + expected + '"'  + 
+                ", Found=" + '"' + found + '"' ;
     }
     
     

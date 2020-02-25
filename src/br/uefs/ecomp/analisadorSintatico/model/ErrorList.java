@@ -1,6 +1,7 @@
 package br.uefs.ecomp.analisadorSintatico.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
@@ -16,5 +17,9 @@ public class ErrorList {
     
     public void addErro(Error erro){
         this.errorList.add(erro);
+    }
+    
+    public Iterator<Error> iterator(){
+        return this.errorList.iterator();
     }
 }

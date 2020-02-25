@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.uefs.ecomp.analisadorSintatico.model;
 
 import br.uefs.ecomp.AnalisadorLexico.model.Token;
@@ -22,7 +17,6 @@ public class TokensReader {
         scan = new ScanLexema();
         this.erroList = new ErrorList();
         
-        stateZero(arq.next());
     }
     
     private void setErro(int line, String expected, String found){
@@ -30,7 +24,7 @@ public class TokensReader {
         this.erroList.addErro(erro);
     }
     
-    private void stateZero(Token token) {
+    public ErrorList stateZero(Token token) {
         if(arq.hasNext()){
             if(token.getCodigo().equals("PRE")){
                 switch (token.getLexema()) {
@@ -92,6 +86,8 @@ public class TokensReader {
                 }  
             }
         }
+        
+        return this.erroList;
     }
     
     public void function_procedure (Token token){
@@ -142,25 +138,6 @@ public class TokensReader {
                 || token.getCodigo().equals("IDE")){
             commands(token);
         }
-        
-        if(scan.isModifiers(token.getLexema())) {
-            token = arq.next();
-            if(token.getLexema().equals(".")){
-                call_variable(token);
-            } else {
-                while(!token.getCodigo().equals("IDE")){
-                    token = arq.next();
-                    if(!arq.hasNext()){
-                        break;
-                    }
-                }
-            }
-        }
-        
-        if(token.getCodigo().equals("IDE")) {
-            token = arq.next();
-            paths(token);
-        }
     }
     
     private void params_list (Token token) {
@@ -195,23 +172,84 @@ public class TokensReader {
         
         if(scan.isModifiers(token.getLexema())) {
             token = this.arq.next();
-            if(token.getLexema().equals(".")){
-                call_variable(token);
+            call_variable(token);
+        }
+        
+        if(token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+            if(token.getLexema().equals(".") || token.getLexema().equals("[")){
+                paths(token);
+            }
+            
+            if(token.getLexema().equals("=")){
+                token = this.arq.next();
+                assing(token);
             } else {
-                setErro(token.getLine(), "Delimitator: \".\"", token.getLexema());
-                while(!token.getCodigo().equals("IDE")){
-                    token = arq.next();
-                    if(!arq.hasNext()){
+                call_procedure_function(token);
+            }
+        }
+    }
+    
+    private void assing(Token token){
+        
+        if(token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+            if(token.getLexema().equals("(")){
+                call_procedure_function(token);
+            } else {
+                expression(token);
+            }
+        }
+        
+        if(token.getCodigo().equals("CDC")){
+            token = this.arq.next();
+        }
+        
+        if(token.getLexema().equals("-")){
+            token = this.arq.next();
+            if(token.getCodigo().equals("NRO")){
+                token = this.arq.next();
+                expression(token);
+            } else {
+                setErro(token.getLine(), "Number", token.getLexema());
+                while(!token.getCodigo().equals("NRO")){
+                    token = this.arq.next();
+                    if(!this.arq.hasNext()){
                         break;
                     }
                 }
             }
         }
         
-        if(token.getCodigo().equals("IDE")){
+        if(token.getLexema().equals("!")){
             token = this.arq.next();
-            call_procedure_function(token);
+            unary_operation(token);
         }
+        
+        if(scan.isBooleans(token.getLexema())){
+            token = this.arq.next();
+            expression(token);
+        } else {
+            setErro(token.getLine(), "Number, string, boolean, varible, function, procedure", token.getLexema());
+            panicState(token, ";");
+        }
+        
+        if(token.getLexema().equals(";")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \";\"", token.getLexema());
+            token = this.arq.next();
+        }
+        
+        commands(token);
+    }
+    
+    private void unary_operation(Token token){
+        
+    }
+    
+    private void expression(Token token) {
+        
     }
     
     private void call_procedure_function(Token token){
@@ -257,10 +295,16 @@ public class TokensReader {
         
         if(token.getCodigo().equals("NRO") || token.getCodigo().equals("CDC") 
                 || scan.isBooleans(token.getLexema()) || scan.isModifiers(token.getLexema())
-                || token.getLexema().equals("-")){
+                || token.getLexema().equals("-") || token.getCodigo().equals("IDE")){
             if(scan.isModifiers(token.getLexema())){
                 token = this.arq.next();
                 call_variable(token);
+                if(token.getLexema().equals("IDE")){
+                    token = this.arq.next();
+                } else {
+                    setErro(token.getLine(), "Identifier", token.getLexema());
+                    panicState(token, ",");
+                }
             } else 
                 if(token.getLexema().equals("-")){
                     token = this.arq.next();
@@ -285,7 +329,7 @@ public class TokensReader {
             token = this.arq.next();
             if(token.getCodigo().equals("NRO") || token.getCodigo().equals("CDC") 
                 || scan.isBooleans(token.getLexema()) || scan.isModifiers(token.getLexema())
-                || token.getLexema().equals("-")){
+                || token.getLexema().equals("-") || token.getCodigo().equals("IDE")){
                 realParam(token);
             } else {
                 setErro(token.getLine(), "Number, string, boolean, variable", token.getLexema());
@@ -317,15 +361,65 @@ public class TokensReader {
     
     private void call_variable (Token token){
         
+        if(token.getLexema().equals(".")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \".\"", token.getLexema());
+            while(!token.getCodigo().equals("IDE")){
+                token = arq.next();
+                if(!arq.hasNext()){
+                    break;
+                }
+            }
+        }
     }
     
     private void paths (Token token){
         
+        if(token.getLexema().equals(".")){
+            token = this.arq.next();
+            struct(token);
+        }
+        
+        if(token.getLexema().equals("[")){
+            token = this.arq.next();
+            matriz(token);
+        }
+    }
+    
+    private void struct(Token token){
+        
+        if(token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+            if(token.getLexema().equals(".") || token.getLexema().equals("[")){
+                paths(token);
+            }
+        } else {
+            setErro(token.getLine(), "Identifier", token.getLexema());
+            panicState(token, "=");
+        }
+    }
+    
+    private void matriz(Token token){
+        
+        if(token.getCodigo().equals("NRO") || token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Number, indetifier", token.getLexema());
+            panicState(token, "]");
+        }
+        
+        if(token.getLexema().equals("]")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \"]\"", token.getLexema());
+            panicState(token, "=");
+        }
     }
     
     private void panicState (Token token, String sinalizer) {
         while(!token.getLexema().equals(sinalizer)){
-            token = arq.next();
+            token = this.arq.next();
             if(!arq.hasNext()){
                 break;
             }

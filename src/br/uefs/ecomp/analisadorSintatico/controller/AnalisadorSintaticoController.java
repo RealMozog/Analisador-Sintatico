@@ -6,7 +6,9 @@
 package br.uefs.ecomp.analisadorSintatico.controller;
 
 import br.uefs.ecomp.AnalisadorLexico.model.Token;
+import br.uefs.ecomp.analisadorSintatico.model.ErrorList;
 import br.uefs.ecomp.analisadorSintatico.model.TokensReader;
+import br.uefs.ecomp.analisadorSintatico.model.Error;
 import java.util.Iterator;
 
 /**
@@ -15,9 +17,16 @@ import java.util.Iterator;
  */
 public class AnalisadorSintaticoController {
     TokensReader tr;
+    ErrorList list;
     
     public void analiseArq (Iterator<Token> arq){
         
-        tr = new TokensReader(arq);
+        this.tr = new TokensReader(arq);
+        
+        this.list = this.tr.stateZero(arq.next());
+    }
+    
+    public Iterator<Error> iteratorErrors(){
+        return this.list.iterator();
     }
 }

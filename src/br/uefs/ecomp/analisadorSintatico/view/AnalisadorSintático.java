@@ -1,6 +1,7 @@
 package br.uefs.ecomp.analisadorSintatico.view;
 
 import br.uefs.ecomp.AnalisadorLexico.model.Token;
+import br.uefs.ecomp.analisadorSintatico.model.Error;
 import br.uefs.ecomp.AnalisadorLexico.view.AnalisadorLexico;
 import br.uefs.ecomp.analisadorSintatico.controller.AnalisadorSintaticoController;
 import br.uefs.ecomp.AnalisadorLexico.model.TokensList;
@@ -31,11 +32,17 @@ public class AnalisadorSintático {
             String path = "input\\entrada" + count + ".txt";
             List<String> lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
             Iterator<String> i;
+            Iterator<Error> e;
             
             while(!lines.isEmpty()) {
                 i = lines.iterator();
                 controller.analiseArq(readFile(count, lines.size(), i));
 
+                e = controller.iteratorErrors();
+                while(e.hasNext()){
+                    System.out.print(e.next().toString());
+                }
+                
                 count++;
                 path = "input\\entrada" + count + ".txt";
                 lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);

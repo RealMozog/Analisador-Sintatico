@@ -26,6 +26,20 @@ public class TokensReader {
     
     public ErrorList stateZero(Token token) {
         if(arq.hasNext()){
+            global_values(token);
+            
+            if(token.getLexema().equals("}")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
+                while(!token.getLexema().equals("function") || !token.getLexema().equals("procedure")){
+                    token = this.arq.next();
+                    if(!this.arq.hasNext()){
+                        break;
+                    }
+                }
+            }
+            
             if(token.getCodigo().equals("PRE")){
                 switch (token.getLexema()) {
                     case "function":
@@ -76,7 +90,7 @@ public class TokensReader {
                            token = arq.next();
                         } else {
                             setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
-                            while(arq.hasNext()){
+                            while(!arq.hasNext()){
                                 token = arq.next();
                             }
                         }
@@ -90,7 +104,293 @@ public class TokensReader {
         return this.erroList;
     }
     
-    public void function_procedure (Token token){
+    private void global_values(Token token){
+        
+        if(token.getLexema().equals("var")){
+            token = this.arq.next();
+            if(token.getLexema().equals("{")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"{\"", token.getLexema());
+                token = this.arq.next();
+            }
+            
+            var_values_declaration(token);
+            
+            if(token.getLexema().equals("}")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
+                panicState(token, "const");
+            }
+            
+            if(token.getLexema().equals("const")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "reserved word: \"const\"", token.getLexema());
+                panicState(token, "{");
+            }
+            
+            if(token.getLexema().equals("{")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"{\"", token.getLexema());
+                token = this.arq.next();
+            }
+
+            const_values_declaration(token);
+        }
+        
+        if(token.getLexema().equals("const")){
+            token = this.arq.next();
+            if(token.getLexema().equals("{")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"{\"", token.getLexema());
+                token = this.arq.next();
+            }
+            
+            const_values_declaration(token);
+            
+            if(token.getLexema().equals("}")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
+                panicState(token, "var");
+            }
+            
+            if(token.getLexema().equals("var")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "reserved word: \"var\"", token.getLexema());
+                panicState(token, "{");
+            }
+            
+            if(token.getLexema().equals("{")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"{\"", token.getLexema());
+                token = this.arq.next();
+            }
+
+            var_values_declaration(token);
+            
+            if(token.getLexema().equals("}")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
+                token = this.arq.next();
+            }
+        }
+    }
+    
+    private void var_values_declaration(Token token){
+        
+        if(scan.isType(token.getLexema())){
+            token = this.arq.next();
+            var_values_atribuition(token);
+            var_more_atribuition(token);
+            if(token.getLexema().equals(";")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator:\";\"", token.getLexema());
+                token = this.arq.next();
+                var_values_declaration(token);
+            }
+        }
+        
+        if(token.getLexema().equals("typedef")){
+            token = this.arq.next();
+            if(token.getLexema().equals("struct")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Reserved word: \"struct\"", token.getLexema());
+                while(!token.getCodigo().equals("IDE")){
+                    token = this.arq.next();
+                    if(!this.arq.hasNext()){
+                        break;
+                    }
+                }
+            }
+            
+            IDE_struct(token);
+            
+            var_values_declaration(token);
+        }
+        
+        if(token.getLexema().equals("struct")){
+            token = this.arq.next();
+            
+            IDE_struct(token);
+            
+            var_values_declaration(token);
+        }
+    }
+    
+    private void IDE_struct(Token token){
+        
+        if(token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Identifier", token.getLexema());
+            panicState(token, "{");
+        }
+        
+        IDE_struct_2(token);
+    }
+    
+    private void IDE_struct_2(Token token){
+        
+        if(token.getLexema().equals("extends")){
+            token = this.arq.next();
+            if(token.getCodigo().equals("IDE")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Identifier", token.getLexema());
+                panicState(token, "{");
+            }
+        }
+        
+        if(token.getLexema().equals("{")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator:\"{\"", token.getLexema());
+            panicState(token, "var");
+        }
+        
+        if(token.getLexema().equals("var")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Reserved word: \"var\"", token.getLexema());
+            panicState(token, "{");
+        }
+        
+        if(token.getLexema().equals("{")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator:\"{\"", token.getLexema());
+            token = this.arq.next();
+        }
+        
+        var_values_declaration(token);
+        
+        if(token.getLexema().equals("}")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
+            panicState(token, "}");
+        }
+
+        if(token.getLexema().equals("}")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Delimitator:\"}\"", token.getLexema());
+            token = this.arq.next();
+        }
+        
+        var_values_declaration(token);
+    }
+    
+    private void var_values_atribuition(Token token){
+        
+        if(token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Identifier", token.getLexema());
+            token = this.arq.next();
+        }
+        
+        array_verification(token);
+    }
+    
+    private void array_verification(Token token){
+        
+        if(token.getLexema().equals("[")){
+            token = this.arq.next();
+            if(token.getCodigo().equals("NRO")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Number", token.getLexema());
+                panicState(token, "]");
+            }
+            
+            array_verification(token);
+        }
+    }
+    
+    private void var_more_atribuition(Token token){
+        
+        if(token.getLexema().equals(",")){
+            token = this.arq.next();
+            var_values_atribuition(token);
+            var_more_atribuition(token);
+        }
+    }
+    
+    private void const_values_declaration(Token token){
+        
+        if(scan.isType(token.getLexema())){
+            token = this.arq.next();
+            const_values_atribuition(token);
+            const_more_atribuition(token);
+            if(token.getLexema().equals(";")){
+                token = this.arq.next();
+            } else {
+                setErro(token.getLine(), "Delimitator: \";\"", token.getLexema());
+                token = this.arq.next();
+            }
+            
+            const_values_declaration(token);
+        } 
+    }
+    
+    private void const_values_atribuition(Token token){
+        
+        if(token.getCodigo().equals("IDE")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Identifier", token.getLexema());
+            panicState(token, "=");
+        }
+        
+        if(token.getLexema().equals("=")){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Operator: \"=\"", token.getLexema());
+            while(!token.getCodigo().equals("NRO") || !token.getCodigo().equals("CDC")
+                    || scan.isBooleans(token.getLexema())){
+                token = this.arq.next();
+                if(!this.arq.hasNext()){
+                    break;
+                }
+            }
+        }
+        
+        value_const(token);
+    }
+    
+    private void value_const(Token token){
+        
+        if(token.getCodigo().equals("NRO") || token.getCodigo().equals("CDC")
+                || scan.isBooleans(token.getLexema())){
+            token = this.arq.next();
+        } else {
+            setErro(token.getLine(), "Number, string, boolean", token.getLexema());
+            token = this.arq.next();
+            const_more_atribuition(token);
+        }
+    }
+    
+    private void const_more_atribuition(Token token){
+        
+        if(token.getLexema().equals(",")){
+            token = this.arq.next();
+            const_values_atribuition(token);
+            const_more_atribuition(token);
+        }
+    }
+    
+    private void function_procedure (Token token){
         
         if(token.getLexema().equals("(")){
             token = arq.next();

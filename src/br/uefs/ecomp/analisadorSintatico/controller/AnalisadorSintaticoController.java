@@ -23,7 +23,7 @@ public class AnalisadorSintaticoController {
         
         this.tr = new TokensReader(arq);
         
-        this.list = this.tr.stateZero(arq.next());
+        this.list = this.tr.stateZero();
     }
     
     public Iterator<Error> iteratorErrors(){

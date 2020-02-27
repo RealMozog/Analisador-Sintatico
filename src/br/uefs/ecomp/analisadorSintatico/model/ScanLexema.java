@@ -20,8 +20,12 @@ public class ScanLexema {
     private final String[] unary_op = { "++", "--" };
     private final String[] operators = { "+", "-", "/", "*", "&&", "||", ">", 
         "<", "==", "!=", ">=", "<="  };
-    
-    
+    private final String[] logicaOp = { "&&", "||" };
+    private final String[] RelationalOpStronger = { ">", "<", ">=", "<=" };
+    private final String[] RelationalOpWeaker = { "==", "!=" };
+    private final String[] plus_minus = { "+", "-" };
+    private final String[] mult_div = { "*", "/" };
+            
     public boolean isType(String lexema){
         List<String> types = Arrays.asList(this.type);
         
@@ -56,5 +60,35 @@ public class ScanLexema {
         List<String> operator = Arrays.asList(this.operators);
         
         return lexema != null? operator.contains(lexema): false;
+    }
+    
+    public boolean isLogicalOp(String lexema) {
+        List<String> logical_op = Arrays.asList(this.logicaOp);
+        
+        return lexema != null? logical_op.contains(lexema): false;
+    }
+    
+    public boolean isRelationalOpStronger(String lexema) {
+        List<String> relation_op = Arrays.asList(this.RelationalOpStronger);
+        
+        return lexema != null? relation_op.contains(lexema): false;
+    }
+    
+    public boolean isRelationalOpWeaker(String lexema) {
+        List<String> relation_op = Arrays.asList(this.RelationalOpWeaker);
+        
+        return lexema != null? relation_op.contains(lexema): false;
+    }
+    
+    public boolean isPlusMinus(String lexema) {
+        List<String> plus_minu = Arrays.asList(this.plus_minus);
+        
+        return lexema != null? plus_minu.contains(lexema): false;
+    }
+    
+    public boolean isTimesDiv(String lexema) {
+        List<String> times_div = Arrays.asList(this.mult_div);
+        
+        return lexema != null? times_div.contains(lexema): false;
     }
 }

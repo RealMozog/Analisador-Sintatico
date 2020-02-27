@@ -40,7 +40,7 @@ public class AnalisadorSintático {
 
                 e = controller.iteratorErrors();
                 while(e.hasNext()){
-                    System.out.print(e.next().toString());
+                    System.out.print(e.next().toString() + "\n");
                 }
                 
                 count++;

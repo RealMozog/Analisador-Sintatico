@@ -17,6 +17,9 @@ public class ScanLexema {
     private final String[] commands = { "if", "while", "read", "print" } ;
     private final String[] modifiers = { "global", "local" };
     private final String[] boleans = { "true", "false" };
+    private final String[] unary_op = { "++", "--" };
+    private final String[] operators = { "+", "-", "/", "*", "&&", "||", ">", 
+        "<", "==", "!=", ">=", "<="  };
     
     
     public boolean isType(String lexema){
@@ -41,5 +44,17 @@ public class ScanLexema {
         List<String> bolean = Arrays.asList(this.boleans);
         
         return lexema != null? bolean.contains(lexema): false;
+    }
+    
+    public boolean isUnaryOp(String lexema) {
+        List<String> unary = Arrays.asList(this.unary_op);
+        
+        return lexema != null? unary.contains(lexema): false;
+    }
+    
+    public boolean isOperators(String lexema) {
+        List<String> operator = Arrays.asList(this.operators);
+        
+        return lexema != null? operator.contains(lexema): false;
     }
 }

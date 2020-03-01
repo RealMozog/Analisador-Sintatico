@@ -9,6 +9,7 @@ import br.uefs.ecomp.analisadorSintatico.model.AnaliseLexica;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,45 +28,51 @@ public class AnalisadorSintático {
     public static void main(String[] args) throws Exception {
         AnaliseLexica al = new AnaliseLexica();        
         AnalisadorSintaticoController controller = new AnalisadorSintaticoController();
+        Iterator<Token> it; 
+        Iterator<Error> e;
+        String output = "";
+        int count = 1;
         
-        al.getArqs().stream().forEach(i -> {
-            System.out.print( "\n");
-            Iterator<Token> it = i.iterator();
-            Iterator<Error> e;
-            
-            while(it.hasNext()){
-                controller.analiseArq(it);
-                e = controller.iteratorErrors();
-                while(e.hasNext()){
-                    System.out.print(e.next().toString() + "\n");
-                }
-                // System.out.print(it.next().toString() + "\n");
-            }
-        });
-       /* try {
-            String path = "input\\entrada" + count + ".txt";
-            List<String> lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
-            Iterator<String> i;
-            Iterator<Error> e;
-            
-            while(!lines.isEmpty()) {
-                i = lines.iterator();
-                controller.analiseArq(readFile(count, lines.size(), i));
+        for (List<Token> arq: al.getArqs()){
+            it = arq.iterator();
+            controller.analiseArq(it);
+            e = controller.iteratorErrors();
 
-                e = controller.iteratorErrors();
+            if(!e.hasNext()){
+                output = "Nenhum erro sintático encontrado no arquivo de entrada" + count;
+                System.out.print(output + "\n");
+            } else {
+                System.out.print(e.hasNext());
                 while(e.hasNext()){
+                    output += e.next().toString() + "\n";
                     // System.out.print(e.next().toString() + "\n");
                 }
-                
-                count++;
-                path = "input\\entrada" + count + ".txt";
-                lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
             }
             
-          
-        } catch (IOException e) {
-             System.err.printf("Erro na abertura do arquivo: %s.\n",e.getMessage());
-        }*/
+            write_output(output, count);
+            output = "";
+            count++;
+        }
+        
+       /* al.getArqs().stream().forEach(i -> {
+            System.out.print( "\n");
+            
+            
+            while(it.hasNext()){
+                
+                // System.out.print(it.next().toString() + "\n");
+            }
+            count ++;
+        });*/
+    }
+    
+    public static void write_output(String erros, int count) throws IOException{
+        
+        Path path = Paths.get("output\\saida" + count + ".txt");
+        
+        byte[] strToBytes = erros.getBytes();
+        
+        Files.write(path, strToBytes);
     }
     
     public static Iterator<Token> readFile (int count, int size, Iterator<String> iterator) {

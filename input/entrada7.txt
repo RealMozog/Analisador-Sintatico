@@ -1,0 +1,16 @@
+﻿// teste06 - cadeia de caracteres (string)
+
+" ok "
+
+"string
+
+pode terminar em outra linha"
+
+" string com simbolo invalido ¶ "
+
+" diga \"oi\""
+
+" hello
+  world "
+
+" string \"nao fechada\"

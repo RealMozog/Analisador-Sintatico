@@ -1,0 +1,12 @@
+<3: CDC, " ok ">
+<5: CDC, "string
+
+pode terminar em outra linha">
+<11: CDC, " diga \"oi\"">
+<13: CDC, " hello
+  world ">
+
+
+<1: CIN, ﻿>
+<9: CMF, " string com simbolo invalido ¶ ">
+<16: CMF, " string \"nao fechada\">

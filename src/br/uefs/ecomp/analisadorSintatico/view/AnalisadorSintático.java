@@ -5,10 +5,12 @@ import br.uefs.ecomp.analisadorSintatico.model.Error;
 import br.uefs.ecomp.AnalisadorLexico.view.AnalisadorLexico;
 import br.uefs.ecomp.analisadorSintatico.controller.AnalisadorSintaticoController;
 import br.uefs.ecomp.AnalisadorLexico.model.TokensList;
+import br.uefs.ecomp.analisadorSintatico.model.AnaliseLexica;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,12 +25,24 @@ public class AnalisadorSintático {
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
-        AnalisadorLexico al = new AnalisadorLexico();
+        AnaliseLexica al = new AnaliseLexica();        
         AnalisadorSintaticoController controller = new AnalisadorSintaticoController();
-        int count = 1;
         
-        
-        try {
+        al.getArqs().stream().forEach(i -> {
+            System.out.print( "\n");
+            Iterator<Token> it = i.iterator();
+            Iterator<Error> e;
+            
+            while(it.hasNext()){
+                controller.analiseArq(it);
+                e = controller.iteratorErrors();
+                while(e.hasNext()){
+                    System.out.print(e.next().toString() + "\n");
+                }
+                // System.out.print(it.next().toString() + "\n");
+            }
+        });
+       /* try {
             String path = "input\\entrada" + count + ".txt";
             List<String> lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
             Iterator<String> i;
@@ -40,7 +54,7 @@ public class AnalisadorSintático {
 
                 e = controller.iteratorErrors();
                 while(e.hasNext()){
-                    System.out.print(e.next().toString() + "\n");
+                    // System.out.print(e.next().toString() + "\n");
                 }
                 
                 count++;
@@ -51,7 +65,7 @@ public class AnalisadorSintático {
           
         } catch (IOException e) {
              System.err.printf("Erro na abertura do arquivo: %s.\n",e.getMessage());
-        }
+        }*/
     }
     
     public static Iterator<Token> readFile (int count, int size, Iterator<String> iterator) {

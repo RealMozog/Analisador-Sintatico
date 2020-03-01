@@ -1,0 +1,12 @@
+// teste07 - varios erros
+	
+real 33.#33;
+
+string mens@gem_1
+
+123#.45
+
+"erro na cadeia. falta fecha aspas
+
+/* nao fechou // 
+comentario //

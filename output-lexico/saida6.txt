@@ -1,0 +1,12 @@
+<3: PRE, real>
+<3: NRO, 33>
+<3: DEL, ;>
+<5: PRE, string>
+<8: NRO, 123>
+<8: DEL, .>
+<8: NRO, 45>
+
+
+<3: NROMF, 33.#>
+<5: IDEMF, mens@gem_1>
+<8: CIN, #>

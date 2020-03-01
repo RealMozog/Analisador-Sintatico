@@ -1,0 +1,25 @@
+<3: IDE, idade>
+<3: ART, ++>
+<3: ART, -->
+<3: ART, />
+<4: PRE, procedure>
+<4: PRE, start>
+<4: DEL, (>
+<4: DEL, )>
+<5: DEL, {>
+<6: PRE, int>
+<6: DEL, ;>
+<7: IDE, x>
+<7: DEL, ;>
+<9: DEL, ;>
+<11: DEL, ,>
+<11: IDE, flag2>
+<11: DEL, ;>
+<13: IDE, uefs_123>
+
+
+<6: IDEMF, cont@dor>
+<7: CIN, _>
+<9: IDEMF, salario$mes>
+<11: IDEMF, flag_#1>
+<11: IDEMF, flag_3_#>

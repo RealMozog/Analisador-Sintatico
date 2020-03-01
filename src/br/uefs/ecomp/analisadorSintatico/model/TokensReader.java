@@ -57,7 +57,7 @@ public class TokensReader {
                             next();
                         } else {
                             setErro(token.getLine(), "Identifier", token.getLexema());
-                            panicState(token, "(");
+                            panicState("(");
                         }
                         
                         function_procedure();
@@ -78,7 +78,7 @@ public class TokensReader {
                             next();
                         } else {
                             setErro(token.getLine(), "Identifier or reserverd word: \"start", token.getLexema());
-                            panicState(token, "(");
+                            panicState("(");
                         }
                         
                         function_procedure();
@@ -125,14 +125,14 @@ public class TokensReader {
                 next();
             } else {
                 setErro(token.getLine(), "Delimitator:\"}", token.getLexema());
-                panicState(token, "const");
+                panicState("const");
             }
             
             if(token.getLexema().equals("const")){
                 next();
             } else {
                 setErro(token.getLine(), "reserved word: \"const", token.getLexema());
-                panicState(token, "{");
+                panicState("{");
             }
             
             if(token.getLexema().equals("{")){
@@ -184,14 +184,14 @@ public class TokensReader {
                 next();
             } else {
                 setErro(token.getLine(), "Delimitator:\"}", token.getLexema());
-                panicState(token, "var");
+                panicState("var");
             }
             
             if(token.getLexema().equals("var")){
                 next();
             } else {
                 setErro(token.getLine(), "reserved word: \"var", token.getLexema());
-                panicState(token, "{");
+                panicState("{");
             }
             
             if(token.getLexema().equals("{")){
@@ -281,7 +281,7 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Identifier", token.getLexema());
-            panicState(token, "{");
+            panicState("{");
         }
         
         IDE_struct_2();
@@ -295,7 +295,7 @@ public class TokensReader {
                 next();
             } else {
                 setErro(token.getLine(), "Identifier", token.getLexema());
-                panicState(token, "{");
+                panicState("{");
             }
         }
         
@@ -303,14 +303,14 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Delimitator:\"{", token.getLexema());
-            panicState(token, "var");
+            panicState("var");
         }
         
         if(token.getLexema().equals("var")){
             next();
         } else {
             setErro(token.getLine(), "Reserved word: \"var", token.getLexema());
-            panicState(token, "{");
+            panicState("{");
         }
         
         if(token.getLexema().equals("{")){
@@ -333,7 +333,7 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Delimitator:\"}", token.getLexema());
-            panicState(token, "}");
+            panicState("}");
         }
 
         if(token.getLexema().equals("}")){
@@ -380,7 +380,7 @@ public class TokensReader {
                 next();
             } else {
                 setErro(token.getLine(), "Number", token.getLexema());
-                panicState(token, "]");
+                panicState("]");
             }
             
             array_verification();
@@ -425,7 +425,7 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Identifier", token.getLexema());
-            panicState(token, "=");
+            panicState("=");
         }
         
         if(token.getLexema().equals("=")){
@@ -451,7 +451,7 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Number, string, boolean", token.getLexema());
-            panicState(token, ";");
+            panicState(";");
         }
     }
     
@@ -484,7 +484,7 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Delimitator:\")", token.getLexema());
-            panicState(token, "{");
+            panicState("{");
         }
         
         if(token.getLexema().equals("{")){
@@ -503,7 +503,7 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Reserved word: \"var", token.getLexema());
-            panicState(token, "{");
+            panicState("{");
         }
         
         var_fuctions_procedures();
@@ -604,62 +604,45 @@ public class TokensReader {
         
         if(token.getCodigo().equals("IDE")){
             next();
-            paths();
-            
-            if(token.getLexema().equals("=")){
-                next();
-                assing();
-            } else {
+            if(token.getLexema().equals("(")){
                 call_procedure_function();
+            } else {
+                paths();
+                if(token.getLexema().equals("=")){
+                    next();
+                    assing();
+                } else {
+                    setErro(token.getLine(), "Attribuition Operator: \"=", token.getLexema());
+                    while(!token.getCodigo().equals("NRO")|| !scan.isModifiers(token.getLexema())
+                            || token.getCodigo().equals("IDE") || !token.getLexema().equals("-")
+                            || token.getCodigo().equals("CDC")){
+                        if(!this.arq.hasNext()){
+                            break;
+                        }
+                        next();
+                    }
+                }
             }
         }
     }
     
     private void assing(){
         
-        if(scan.isModifiers(token.getLexema())){
-            call_variable();
+        if(scan.isModifiers(token.getLexema()) || token.getLexema().equals("-") 
+                || token.getCodigo().equals("NRO") || scan.isBooleans(token.getLexema())){
             expression();
-        }
-        
-        if(token.getCodigo().equals("IDE")){
-            next();
-            if(token.getLexema().equals("(")){
-                call_procedure_function();
-            } else {
-                paths();
+        } else if(token.getCodigo().equals("IDE")){
                 expression();
-            }
-        }
-        
-        if(token.getCodigo().equals("CDC")){
-            next();
-        }
-        
-        if(token.getLexema().equals("-")){
-            next();
-            if(token.getCodigo().equals("NRO")){
-                next();
-                expression();
-            } else {
-                setErro(token.getLine(), "Number", token.getLexema());
-                while(!token.getCodigo().equals("NRO")){
-                    if(!this.arq.hasNext()){
-                        break;
-                    }
-                    next();
+                if(token.getLexema().equals("(")){
+                    call_procedure_function();
                 }
-            }
-        }
-        
-        if(scan.isBooleans(token.getLexema())){
-            next();
-            expression();
+        } else if(token.getCodigo().equals("CDC")){
+                next();
         } else {
             setErro(token.getLine(), "Number, string, boolean, variable, function, procedure", token.getLexema());
-            panicState(token, ";");
+            panicState(";");
         }
-
+        
         if(token.getLexema().equals(";")){
             next();
         } else {
@@ -707,11 +690,13 @@ public class TokensReader {
     
     private void final_value(){
         
-        call_variable();
-        
+        if(scan.isModifiers(token.getLexema())){
+            call_variable();
+        }
+
         if(token.getCodigo().equals("IDE")){
             next();
-            
+            paths();
         } else {
             setErro(token.getLine(), "Identifier", token.getLexema());
             while(!scan.isOperators(token.getLexema()) || !token.getLexema().equals(";")
@@ -741,9 +726,17 @@ public class TokensReader {
         }
     }
     
-    private void expression() {
+    private void commands_exp(){
         
         logical_exp();
+    }
+    
+    private void expression() {
+        
+        aritmetic_exp();
+        if(scan.isRelationalOpStronger(token.getLexema()) || scan.isRelationalOpWeaker(token.getLexema())){
+            logical_exp();
+        }
     }
     
     private void logical_exp(){
@@ -866,8 +859,27 @@ public class TokensReader {
     
     private void opt_relational_exp(){
         
-        inequal_exp();
-        equal_exp();
+        if(scan.isRelationalOpStronger(token.getLexema())){
+            next();
+            aritmetic_exp();
+            inequal_exp();
+            equal_exp();
+        } else if(scan.isRelationalOpWeaker(token.getLexema())){
+            next();
+            aritmetic_exp();
+            inequal_exp();
+        } else {
+            setErro(token.getLine(), "Relational Operators: \"(", token.getLexema());
+            while(!token.getLexema().equals("(") || !scan.isUnaryOp(token.getLexema())
+                    || !scan.isModifiers(token.getLexema()) || !token.getCodigo().equals("IDE")
+                    || !token.getLexema().equals("-") || !scan.isBooleans(token.getLexema())
+                    || !token.getCodigo().equals("NRO")){
+                if(!this.arq.hasNext()){
+                    break;
+                }
+                next();
+            }
+        }
     }
     
     private void opt_logical_exp(){
@@ -900,7 +912,7 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Delimitator: \")", token.getLexema());
-            panicState(token, ";");
+            panicState(";");
         } 
         
         if(token.getLexema().equals(";")){
@@ -934,7 +946,7 @@ public class TokensReader {
                     next();
                 } else {
                     setErro(token.getLine(), "Identifier", token.getLexema());
-                    panicState(token, ",");
+                    panicState(",");
                 }
             } else 
                 if(token.getLexema().equals("-")){
@@ -943,7 +955,7 @@ public class TokensReader {
                         next();
                     } else {
                         setErro(token.getLine(), "Number", token.getLexema());
-                        panicState(token, ",");
+                        panicState(",");
                     }
                 }
             else {
@@ -964,7 +976,7 @@ public class TokensReader {
                 realParam();
             } else {
                 setErro(token.getLine(), "Number, string, boolean, variable", token.getLexema());
-                panicState(token, ",");
+                panicState(",");
             }
             more_real_params();
         }
@@ -972,6 +984,76 @@ public class TokensReader {
     
     private void printStatement(){
         
+        if(token.getLexema().equals("(")){
+            next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \"(", token.getLexema());
+            while(!scan.isModifiers(token.getLexema()) || !token.getCodigo().equals("IDE")
+                    || !token.getCodigo().equals("CDC")){
+                if(!this.arq.hasNext()){
+                    break;
+                }
+                next();
+            }
+        }
+        
+        print_params();
+        
+        if(token.getLexema().equals(")")){
+            next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \")", token.getLexema());
+            panicState(";");
+        }
+        
+        if(token.getLexema().equals(";")){
+            next();
+        } else {
+            setErro(token.getLine(), "Delimitator: \";", token.getLexema());
+            while(!scan.isCommands(token.getLexema()) || !token.getCodigo().equals("IDE")
+                    || !token.getLexema().equals("return") || !token.getLexema().equals("}")){
+                if(!this.arq.hasNext()){
+                    break;
+                }
+                next();
+            }
+        }
+    }
+    
+    private void print_params(){
+        
+        print_param();
+        more_print_param();
+    }
+    
+    private void print_param(){
+        
+        if(token.getCodigo().equals("CDC")){
+            next();
+        } else 
+            if(scan.isModifiers(token.getLexema())){
+                call_variable();
+        } else 
+            if(token.getCodigo().equals("IDE")){
+                next();
+                paths();
+        } else {
+            setErro(token.getLine(), "Varible, string", token.getLexema());
+            while(!token.getLexema().equals(")")){
+                if(!this.arq.hasNext()){
+                    break;
+                }
+                next();
+            }
+        }
+    }
+    
+    private void more_print_param(){
+        
+        if(token.getLexema().equals(",")){
+            next();
+            print_params();
+        }
     }
     
     private void readStatement(){
@@ -1047,7 +1129,7 @@ public class TokensReader {
             }
         } else {
             setErro(token.getLine(), "Identifier", token.getLexema());
-            panicState(token, "=");
+            panicState("=");
         }
     }
     
@@ -1057,18 +1139,18 @@ public class TokensReader {
             next();
         } else {
             setErro(token.getLine(), "Number, indetifier", token.getLexema());
-            panicState(token, "]");
+            panicState("]");
         }
         
         if(token.getLexema().equals("]")){
             next();
         } else {
             setErro(token.getLine(), "Delimitator: \"]", token.getLexema());
-            panicState(token, "=");
+            panicState("=");
         }
     }
     
-    private void panicState (Token token, String sinalizer) {
+    private void panicState (String sinalizer) {
         while(!token.getLexema().equals(sinalizer)){
             if(!this.arq.hasNext()){
                 break;

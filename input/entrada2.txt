@@ -6,7 +6,7 @@ const {
 } 
 var {
     int auxNum, testeNum, next;
-    string auxString
+    string auxString;
 }
 
 function int starti (){
@@ -26,7 +26,7 @@ function int starti (){
 
 function inteiro mudaNum (real a){
     var {}    
-    if ((a == c && c <= d) then {
+    if (1+2 == null) then {
             a++;
         } else {
             if (a < 5) then {

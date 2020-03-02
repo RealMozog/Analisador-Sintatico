@@ -781,7 +781,10 @@ public class TokensReader {
         
         aritmetic_exp();
         if(scan.isRelationalOpStronger(this.token.getLexema()) || scan.isRelationalOpWeaker(this.token.getLexema())){
-            logical_exp();
+            opt_relational_exp();
+            if(scan.isLogicalOp(this.token.getLexema())){
+                logical_exp();
+            }
         }
     }
     
@@ -916,7 +919,7 @@ public class TokensReader {
             aritmetic_exp();
             inequal_exp();
         } else {
-            setErro(this.token.getLine(), "Relational Operators: \"(", this.token.getLexema());
+            setErro(this.token.getLine(), "Relational Operators", this.token.getLexema());
             while(!this.token.getLexema().equals("(") || !scan.isUnaryOp(this.token.getLexema())
                     || !scan.isModifiers(this.token.getLexema()) || !this.token.getCodigo().equals("IDE")
                     || !this.token.getLexema().equals("-") || !scan.isBooleans(this.token.getLexema())

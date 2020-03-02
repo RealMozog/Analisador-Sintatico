@@ -1,1 +1,1 @@
-Error: line= 10; Expected=Delimitator:";", Found="}"
+Nenhum erro sintático encontrado no arquivo de entrada2

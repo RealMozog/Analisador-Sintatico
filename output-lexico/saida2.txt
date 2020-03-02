@@ -32,6 +32,7 @@
 <8: DEL, ;>
 <9: PRE, string>
 <9: IDE, auxString>
+<9: DEL, ;>
 <10: DEL, }>
 <12: IDE, function>
 <12: PRE, int>
@@ -93,14 +94,11 @@
 <28: DEL, }>
 <29: PRE, if>
 <29: DEL, (>
-<29: DEL, (>
-<29: IDE, a>
+<29: NRO, 1>
+<29: ART, +>
+<29: NRO, 2>
 <29: REL, ==>
-<29: IDE, c>
-<29: LOG, &&>
-<29: IDE, c>
-<29: REL, <=>
-<29: IDE, d>
+<29: IDE, null>
 <29: DEL, )>
 <29: PRE, then>
 <29: DEL, {>

@@ -355,7 +355,6 @@ public class TokensReader {
         if(this.token.getCodigo().equals("IDE")){
             next();
         } else {
-            System.out.print(token.getLexema());
             setErro(this.token.getLine(), "Identifier", this.token.getLexema());
             while(!scan.isType(this.token.getLexema()) && !this.token.getCodigo().equals("IDE")
                     && !this.token.getLexema().equals("typedef") && !this.token.getLexema().equals("struct")
@@ -366,7 +365,6 @@ public class TokensReader {
                 }
                 next();
             }
-            System.out.print(token.getLexema());
         }
         array_verification();
     }

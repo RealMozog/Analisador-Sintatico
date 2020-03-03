@@ -8,12 +8,10 @@ package br.uefs.ecomp.analisadorSintatico.model;
 import br.uefs.ecomp.AnalisadorLexico.controller.AnalisadorLexicoController;
 import br.uefs.ecomp.AnalisadorLexico.model.Token;
 import br.uefs.ecomp.AnalisadorLexico.model.TokenError;
-import static br.uefs.ecomp.AnalisadorLexico.view.AnalisadorLexico.tokensInValidos;
-import static br.uefs.ecomp.AnalisadorLexico.view.AnalisadorLexico.tokensValidos;
-import static br.uefs.ecomp.AnalisadorLexico.view.AnalisadorLexico.writeOutput;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -74,6 +72,38 @@ public class AnaliseLexica {
         } catch (IOException e) {
              System.err.printf("Erro na abertura do arquivo: %s.\n",e.getMessage());
         }
+    }
+    
+    private void writeOutput(String token, int count) 
+        throws IOException {
+        
+        Path path = Paths.get("output-lexico\\saida" + count + ".txt");
+        
+        byte[] strToBytes = token.getBytes();
+        
+        Files.write(path, strToBytes);
+    }
+    
+    private String tokensValidos(Iterator<Token> iterator){
+        String w = "";
+        
+        while(iterator.hasNext()){
+            Token t = iterator.next();
+            w += t.toString() + '\n';
+        }
+        
+        return w;
+    }
+    
+    private String tokensInValidos(Iterator<TokenError> iterator){
+        String err = "\n\n";
+        
+        while(iterator.hasNext()){
+            TokenError e = iterator.next();
+            err += e.toString() + '\n';
+        }
+        
+        return err;
     }
     
     private void addArq(List<Token> arq){

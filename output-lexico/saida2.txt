@@ -43,7 +43,6 @@
 <13: PRE, var>
 <13: DEL, {>
 <14: PRE, int>
-<14: IDE, numLocal>
 <14: DEL, ;>
 <15: PRE, real>
 <15: IDE, numAux>
@@ -94,15 +93,11 @@
 <28: DEL, }>
 <29: PRE, if>
 <29: DEL, (>
-<29: NRO, 1>
-<29: ART, +>
-<29: NRO, 2>
 <29: REL, ==>
 <29: IDE, null>
 <29: DEL, )>
 <29: PRE, then>
 <29: DEL, {>
-<30: IDE, a>
 <30: ART, ++>
 <30: DEL, ;>
 <31: DEL, }>

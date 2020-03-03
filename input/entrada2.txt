@@ -11,7 +11,7 @@ var {
 
 function int starti (){
     var {
-        int numLocal;
+        int ;
         real numAux;
     }
     numLocal = 3;
@@ -26,8 +26,8 @@ function int starti (){
 
 function inteiro mudaNum (real a){
     var {}    
-    if (1+2 == null) then {
-            a++;
+    if ( == null) then {
+            ++;
         } else {
             if (a < 5) then {
                 a = a.b.v.b * 3;

@@ -42,10 +42,9 @@ public class AnalisadorSintático {
                 output = "Nenhum erro sintático encontrado no arquivo de entrada" + count;
                 System.out.print(output + "\n");
             } else {
-                System.out.print(e.hasNext());
+                //System.out.print(e.hasNext());
                 while(e.hasNext()){
                     output += e.next().toString() + "\n";
-                    // System.out.print(e.next().toString() + "\n");
                 }
             }
             

@@ -91,4 +91,13 @@ public class ScanLexema {
         
         return lexema != null? times_div.contains(lexema): false;
     }
+    
+    public boolean isNoLogicalOperators(String lexema) {
+        List<String> nologicalOp = Arrays.asList(this.operators);
+        
+        nologicalOp.remove("&&");
+        nologicalOp.remove("||");
+        
+        return lexema != null? nologicalOp.contains(lexema): false;
+    }
 }
